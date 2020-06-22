@@ -14,7 +14,7 @@ namespace BeastHunter
 
         #region ClassLifeCycle
 
-        public SphereInitilizeController(GameContext context, Services services)
+        public SphereInitilizeController(GameContext context)
         {
             _context = context;
         }
@@ -27,9 +27,9 @@ namespace BeastHunter
         public void OnAwake()
         {
             var SphereData = Data.SphereData;
-            GameObject instance = GameObject.Instantiate(SphereData.SphereStruct.Prefab);
+            GameObject instance = GameObject.Instantiate(SphereData.SphereStruct.Prefab,SphereData.SphereStruct.Target);
             SphereModel Sphere = new SphereModel(instance, SphereData);
-            _context._sphereModel = Sphere;
+            _context.SphereModel = Sphere;
         }
 
         #endregion

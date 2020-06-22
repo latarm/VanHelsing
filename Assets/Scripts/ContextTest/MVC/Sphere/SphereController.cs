@@ -14,7 +14,7 @@ namespace BeastHunter
 
         #region ClassLifeCycle
 
-        public SphereController(GameContext context, Services services)
+        public SphereController(GameContext context)
         {
             _context = context;
         }
@@ -22,24 +22,24 @@ namespace BeastHunter
         #endregion
 
 
-        #region Updating
+        #region IUpdate
 
         public void Updating()
         {
-            _context._sphereModel.Initilize();
+            _context.SphereModel.Initilize();
         }
 
         #endregion
 
 
-        #region OnAwake
+        #region IAwake
 
         public void OnAwake()
         {
             
         }
 
-        #endregion        
+        #endregion
     }
 }
 
