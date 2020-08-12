@@ -3,7 +3,7 @@
 
 namespace BeastHunter
 {
-    public class BattleTargetMovementState : CharacterBaseState
+    public sealed class BattleTargetMovementState : CharacterBaseState
     {
         #region Constants
 
@@ -32,7 +32,6 @@ namespace BeastHunter
         #region Properties
 
         public Vector3 MoveDirection { get; private set; }
-        public Collider ClosestEnemy { get; private set; }
 
         public float MovementSpeed { get; private set; }
         public float SpeedIncreace { get; private set; }
@@ -45,6 +44,9 @@ namespace BeastHunter
         public BattleTargetMovementState(CharacterModel characterModel, InputModel inputModel, CharacterAnimationController animationController,
             CharacterStateMachine stateMachine) : base(characterModel, inputModel, animationController, stateMachine)
         {
+            Type = StateType.Battle;
+            IsTargeting = true;
+            IsAttacking = false;
             CanExit = false;
             CanBeOverriden = true;
             SpeedIncreace = _characterModel.CharacterCommonSettings.InBattleRunSpeed /
@@ -59,18 +61,12 @@ namespace BeastHunter
         public override void Initialize()
         {
             CanExit = false;
-            _characterModel.CharacterSphereCollider.radius *= _characterModel.CharacterCommonSettings.
-                SphereColliderRadiusIncrese;
-            GetClosestEnemy();
-            _animationController.PlayBattleTargetMovementAnimation();
-            _characterModel.CameraCinemachineBrain.m_DefaultBlend.m_Time = 1f;
-            _characterModel.CharacterTargetCamera.Priority = 15;
+            _animationController.PlayBattleTargetMovementAnimation(_characterModel.LeftHandWeapon, _characterModel.RightHandWeapon);
         }
 
         public override void Execute()
         {
             ExitCheck();
-            GetClosestEnemy();
             CountSpeed();
             MovementControl();
             StayInBattle();
@@ -81,9 +77,13 @@ namespace BeastHunter
             _characterModel.AnimationSpeed = _characterModel.CharacterCommonSettings.AnimatorBaseSpeed;
         }
 
+        public override void OnTearDown()
+        {
+        }
+
         private void ExitCheck()
         {
-            if(ClosestEnemy == null)
+            if(_characterModel.ClosestEnemy == null)
             {
                 CanExit = true;
             }
@@ -105,9 +105,9 @@ namespace BeastHunter
                 MoveDirection = (Vector3.forward * _currentVerticalInput + Vector3.right * _currentHorizontalInput) /
                     (Mathf.Abs(_currentVerticalInput) + Mathf.Abs(_currentHorizontalInput)) * _angleSpeedIncrease;
 
-                if (ClosestEnemy != null)
+                if (_characterModel.ClosestEnemy != null)
                 {
-                    Vector3 lookPos = ClosestEnemy.transform.position - _characterModel.CharacterTransform.position;
+                    Vector3 lookPos = _characterModel.ClosestEnemy.transform.position - _characterModel.CharacterTransform.position;
                     lookPos.y = 0;
                     Quaternion rotation = Quaternion.LookRotation(lookPos);
                     _characterModel.CharacterTransform.rotation = rotation;
@@ -150,28 +150,6 @@ namespace BeastHunter
 
             MovementSpeed = Mathf.SmoothDamp(_characterModel.CurrentSpeed, _targetSpeed, ref _currentVelocity,
                 _speedChangeLag);
-        }
-
-        private void GetClosestEnemy()
-        {
-            Collider enemy = null;
-
-            float minimalDistance = _characterModel.CharacterCommonSettings.SphereColliderRadius;
-            float countDistance = minimalDistance;
-
-            foreach (var collider in _characterModel.EnemiesInTrigger)
-            {
-                countDistance = Mathf.Sqrt((_characterModel.CharacterTransform.position -
-                    collider.transform.position).sqrMagnitude);
-
-                if (countDistance < minimalDistance)
-                {
-                    minimalDistance = countDistance;
-                    enemy = collider;
-                }
-            }
-
-            ClosestEnemy = enemy;
         }
 
         #endregion

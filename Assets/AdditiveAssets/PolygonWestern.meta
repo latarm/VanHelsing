@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/AdditiveAssets/PolygonWestern.meta
 guid: 409f739028ce0f641b4bbbae7b2ed598
+=======
+guid: 8e1f21b6db2b67b46990b1b17de26aa4
+>>>>>>> upstream:Assets/Scenes/StartLocation.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

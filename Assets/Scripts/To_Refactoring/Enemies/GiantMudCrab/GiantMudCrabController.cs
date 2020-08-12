@@ -47,6 +47,7 @@ namespace BeastHunter
                 giantMudCrabBehaviour.OnTriggerEnterHandler += OnTriggerEnterHandler;
                 giantMudCrabBehaviour.OnTriggerExitHandler += OnTriggerExitHandler;
                 giantMudCrabBehaviour.OnTakeDamageHandler += OnTakeDamage;
+                giantMudCrabBehaviour.Stats = _context.GiantMudCrabModel.GiantMudCrabStruct.Stats;
                 Debug.Log("Activate");
             }
         }
@@ -74,17 +75,24 @@ namespace BeastHunter
 
         #region Methods
 
-        private void OnTakeDamage(DamageStruct damage)
+        private void OnTakeDamage(Damage damage)
         {
             if (_context.GiantMudCrabModel.GiantMudCrabStruct.IsDigIn)
             {
-                _context.GiantMudCrabModel.CurrentHealth -= damage.damage/2;
-                Debug.Log("crab got " + damage.damage/2 + " damage");
+                _context.GiantMudCrabModel.CurrentHealth -= damage.PhysicalDamage / 2;
+                Debug.Log("crab got " + damage.PhysicalDamage/2 + " damage");
             }
             else
             {
-                _context.GiantMudCrabModel.CurrentHealth -= damage.damage;
-                Debug.Log("crab got " + damage.damage + " damage");
+                _context.GiantMudCrabModel.CurrentHealth -= damage.PhysicalDamage;
+                Debug.Log("crab got " + damage.PhysicalDamage + " damage");
+            }
+
+            float stunProbability = Random.Range(0f, 1f);
+
+            if(damage.StunProbability > stunProbability)
+            {
+                Debug.Log("crab should be stunned");
             }
 
             if(_context.GiantMudCrabModel.CurrentHealth <= 0)
@@ -93,6 +101,7 @@ namespace BeastHunter
                 Debug.Log("The crab is dead");
                 _context.GiantMudCrabModel.Crab.GetComponent<Renderer>().material.color = Color.red;
                 _context.GiantMudCrabModel.Crab.GetComponent<InteractableObjectBehavior>().enabled = false;
+                Services.SharedInstance.EventManager.TriggerEvent(GameEventTypes.NpcDie, new EnemyDieArgs(_context.GiantMudCrabModel.GiantMudCrabTransform.GetComponent<IGetNpcInfo>().GetInfo().Item1,0));
             }
         }
 

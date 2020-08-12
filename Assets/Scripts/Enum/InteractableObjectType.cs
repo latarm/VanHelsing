@@ -8,6 +8,7 @@
         Crab   = 3,
         Player = 4,
         Enemy  = 5,
-        HitBox = 6
+        HitBox = 6,
+        Npc    = 7
     }
 }

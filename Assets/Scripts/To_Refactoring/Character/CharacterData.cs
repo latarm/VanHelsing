@@ -9,7 +9,7 @@ namespace BeastHunter
         #region PrivateData
 
         public CharacterCommonSettingsStruct _characterCommonSettings;
-        public CharacterCameraStruct _characterCameraSettings;
+        public BaseStatsClass _characterStatsSettings;
 
         #endregion
 
@@ -17,7 +17,6 @@ namespace BeastHunter
         #region Fields
 
         private Vector3 _movementVector;
-        private float _currentAngleVelocity;
 
         #endregion
 
